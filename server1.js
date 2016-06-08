@@ -1,19 +1,28 @@
 var express = require('express');
 var app = express();
 var PORT = process.env.PORT || 3000;
-var bodyParser = require('body-parser');
-app.use(bodyParser.json());
 
-var todos = [];
 //process.env.PORT is env variable provided by heroku and 
 //is used by heroku when deployed
-var todoNextId =1;
+var todos =[{
+	id: 1,
+	description : "meet mom for lunch",
+	completed 	: false
+
+},{
+	id:2,
+	description:"go to market",
+	completed : false
+},
+{
+	id:3,
+	description:"go to bed",
+	completed : true
+}];
 app.get('/',function(req,res){
 	res.send('Todo API Root');
 
 });
-
-
 
 /********************************************
 we have data and now we are going for some request
@@ -42,20 +51,6 @@ app.get('/todos/:id', function(req,res){
 	else{res.status(404).send();}
 	res.send('Asking for todo with id of '+req.params.id);
 })
-// POST request to take data
-// the url wil be same as get url
-
-app.post('/todos', function(req,res){
-	var body=req.body;
-	 body.id= todoNextId;
-	todoNextId++;
-	todos.push(body);
-
-
-	console.log('des : '+body.description);
-	res.json(body);
-
-});
 
 app.listen(PORT, function(){
 	console.log('express listening on PORT: '+ PORT);
