@@ -82,6 +82,53 @@ app.delete('/todos/:id', function(req,res){
 	}
 
 })
+//PUT method.. to update a to do it
+// url is specific to each item so it has the id in the url
+//validate the object you are going to receive, before updation
+app.put('/todos/:id', function(req,res){
+	
+		var body= _.pick(req.body,'description','completed');
+		var validAttributes = {};
+		var todoid = parseInt(req.params.id,10);
+		var matchedTodo = _.findWhere(todos,{id: todoid});
+	
+		if(!matchedTodo){
+			return	res.status(404).json({"error": "no matched toDo"});
+		}
+		
+		if(body.hasOwnProperty('completed') && _.isBoolean(body.completed)){
+			//if it has the property and it is a boolean,we need to validate it
+			validAttributes.completed = body.completed;
+		}
+
+		else if(body.hasOwnProperty('completed')){
+			//the property exists but it is not a boolean
+			res.status(400).send('error : not booelan');
+		}
+		console.log("matched to do found");
+		if(body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length === 0){
+			//if it has the property and it is a boolean,we need to validate it
+			validAttributes.description = body.description;
+		}
+		else if(body.hasOwnProperty('description')){
+			//the property exists but it is not a string or it is empty
+			res.status(400).send('not string or an empty string');
+		}
+
+		//use _.extend method
+			//Copy all of the properties in the source objects over to
+			//the destination object, and return the destination object.
+			//It's in-order, so the last source will override properties 
+			//of the same name in previous arguments.
+
+			// _.extend({name: 'moe'}, {age: 50});
+			// => {name: 'moe', age: 50}
+	
+		_.extend(matchedTodo, validAttributes);
+		console.log("exited descr");
+		res.json(matchedTodo);//autoamtically sends 200
+		
+});
 
 app.listen(PORT, function(){
 	console.log('express listening on PORT: '+ PORT);
