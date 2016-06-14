@@ -1,0 +1,1 @@
+_dirname = path.resolve();console.log(_dirname);
