@@ -24,6 +24,8 @@ var Todo = sequelize.define('todo', {
 	}
 })
 
+// var Todo = require('todo.js');
+
 sequelize.sync({
 	//force: true
 }).then(function() {
