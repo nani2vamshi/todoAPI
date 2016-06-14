@@ -26,16 +26,22 @@ url can be GET /todos
 app.get('/todos', function(req, res){
 	var queryParams = req.query;
 	var filteredTodos = todos;
-	// In the above comment, query parameter, the query param is a string, not boolean
-	// if has property, and completed is = true
-	//call .where and set filtered todos array to .where
-	//else if has prop && completed is false... 
+	// var filterQ = todos;
+	
+	//add description query later
 	if( queryParams.hasOwnProperty('completed') && queryParams.completed === 'true' ){
 		filteredTodos = _.where(filteredTodos, {completed : true});
 	}
 	else if(queryParams.hasOwnProperty('completed') && queryParams.completed === 'false'){
 		filteredTodos = _.where(filteredTodos,{completed :false});
 	}
+
+	if(queryParams.hasOwnProperty('q') && queryParams.q.length >0){
+		filteredTodos = _.filter(filteredTodos, function(todo){
+			return todo.description..toLowerCase().indexOf(queryParams.q.toLowerCase()) > -1;
+		});
+	}
+	
 	res.json(filteredTodos);
 })
 
