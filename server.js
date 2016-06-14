@@ -53,22 +53,29 @@ app.get('/todos', function(req, res) {
 
 app.get('/todos/:id', function(req, res) {
 		var todoid = parseInt(req.params.id, 10); // since req param is a string
-		// var matcheditem;
-		// todos.forEach(function(todo){
-		// 	if(todoid === todo.id){
-		// 		matcheditem = todo;
-		// 	}
+		// var matcheditem = _.findWhere(todos, {
+		// 	id: todoid
 		// });
-		var matcheditem = _.findWhere(todos, {
-			id: todoid
-		});
 
-		if (matcheditem) {
-			res.json(matcheditem);
-		} else {
-			res.status(404).send();
-		}
-		res.send('Asking for todo with id of ' + req.params.id);
+		// if (matcheditem) {
+		// 	res.json(matcheditem);
+		// } else {
+		// 	res.status(404).send();
+		// }
+		// res.send('Asking for todo with id of ' + req.params.id);
+
+		db.todo.findById(todoid).then(function(todo){
+			if(!!todo){
+				//!! truthy version of the object
+				res.status(200).send(todo.toJSON())
+			}
+			else
+				res.status(404).send();
+			
+		}, function(error){
+			res.status(500).send(error.toJSON());
+
+		})
 
 
 	})
