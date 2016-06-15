@@ -176,22 +176,30 @@ app.put('/todos/:id', function(req, res) {
 
 	db.todo.findById(todoid).then(function(todo) {
 		if (todo) {
-			 todo.update(attributes).then(function(todo){
-		//everything above is a follow up to findById
-		//this is a follow up to todo update
-		res.json(todo.toJSON());
-	}, function(e){
-		res.status(400).send(e);
-	})
-;
+			todo.update(attributes).then(function(todo) {
+				//everything above is a follow up to findById
+				//this is a follow up to todo update
+				res.json(todo.toJSON());
+			}, function(e) {
+				res.status(400).send(e);
+			});
 		} else {
 			res.status(404).send();
 		}
-	}, function(error){
-		res.status(500).json({error: 'Find by Id failed'});
+	}, function(error) {
+		res.status(500).json({
+			error: 'Find by Id failed'
+		});
 	})
 });
-
+app.post('/users', function(req, res) {
+	var body = _.pick(req.body, 'email', 'password');
+	db.user.create(body).then(function(todo) {
+		res.json(todo.toJSON());
+	}, function(e) {
+		res.status(400).json(e);
+	});
+});
 db.sequelize.sync().then(function() {
 	app.listen(PORT, function() {
 		console.log('express listening on PORT: ' + PORT);
