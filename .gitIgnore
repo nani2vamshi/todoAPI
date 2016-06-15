@@ -1,3 +1,4 @@
 node_modules/
 variable-playground.js
 data/dev-todo-api.sqlite
+index.html

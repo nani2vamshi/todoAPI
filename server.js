@@ -6,12 +6,13 @@ var PORT = process.env.PORT || 3000;
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
+
 var todos = [];
 //process.env.PORT is env variable provided by heroku and 
 //is used by heroku when deployed
 var todoNextId = 1;
 app.get('/', function(req, res) {
-	res.send('Todo API Root');
+	res.send('Todo API');
 
 });
 
@@ -118,19 +119,39 @@ app.post('/todos', function(req, res) {
 
 //DELETE /todos/:id
 app.delete('/todos/:id', function(req, res) {
-		var todoid_delete = parseInt(req.params.id, 10);
-		var matchedTodo = _.findWhere(todos, {
-			id: todoid_delete
-		});
+		// var todoid_delete = parseInt(req.params.id, 10);
+		// var matchedTodo = _.findWhere(todos, {
+		// 	id: todoid_delete
+		// });
 
-		if (!matchedTodo) {
-			res.status(404).json({
-				"error": "no matched toDo"
-			});
-		} else {
-			todos = _.without(todos, matchedTodo);
-			res.json(matchedTodo);
-		}
+		// if (!matchedTodo) {
+		// 	res.status(404).json({
+		// 		"error": "no matched toDo"
+		// 	});
+		// } else {
+		// 	todos = _.without(todos, matchedTodo);
+		// 	res.json(matchedTodo);
+		// }
+		/******************* WITH sequilize ************************/
+
+		var todoid = parseInt(req.params.id, 10);
+		db.todo.destroy({
+			where: {
+				id: todoid
+			}
+		}).then(function(rowsDeleted) {
+				if (rowsDeleted === 0) {
+					res.status(404).json({
+						error: 'No such item found. Check the id given'
+					});
+				} else {
+					res.status(200).send("An item is found and is deleted \n");
+				}
+			},
+			function(error) {
+				res.status(500).send(error);
+			}
+		);
 
 	})
 	//PUT method.. to update a to do it
