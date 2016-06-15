@@ -160,47 +160,36 @@ app.delete('/todos/:id', function(req, res) {
 app.put('/todos/:id', function(req, res) {
 
 	var body = _.pick(req.body, 'description', 'completed');
-	var validAttributes = {};
+	var attributes = {};
 	var todoid = parseInt(req.params.id, 10);
-	var matchedTodo = _.findWhere(todos, {
-		id: todoid
-	});
 
-	if (!matchedTodo) {
-		return res.status(404).json({
-			"error": "no matched toDo"
-		});
+
+	if (body.hasOwnProperty('completed')) {
+		attributes.completed = body.completed;
 	}
 
-	if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
-		//if it has the property and it is a boolean,we need to validate it
-		validAttributes.completed = body.completed;
-	} else if (body.hasOwnProperty('completed')) {
-		//the property exists but it is not a boolean
-		res.status(400).send('error : not booelan');
-	}
-	console.log("matched to do found");
-	if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length === 0) {
-		//if it has the property and it is a boolean,we need to validate it
-		validAttributes.description = body.description;
-	} else if (body.hasOwnProperty('description')) {
-		//the property exists but it is not a string or it is empty
-		res.status(400).send('not string or an empty string');
+	if (body.hasOwnProperty('description')) {
+		attributes.description = body.description;
 	}
 
-	//use _.extend method
-	//Copy all of the properties in the source objects over to
-	//the destination object, and return the destination object.
-	//It's in-order, so the last source will override properties 
-	//of the same name in previous arguments.
+	//Here we will have to use an instance method, instea of a model method
 
-	// _.extend({name: 'moe'}, {age: 50});
-	// => {name: 'moe', age: 50}
-
-	_.extend(matchedTodo, validAttributes);
-	console.log("exited descr");
-	res.json(matchedTodo); //autoamtically sends 200
-
+	db.todo.findById(todoid).then(function(todo) {
+		if (todo) {
+			 todo.update(attributes).then(function(todo){
+		//everything above is a follow up to findById
+		//this is a follow up to todo update
+		res.json(todo.toJSON());
+	}, function(e){
+		res.status(400).send(e);
+	})
+;
+		} else {
+			res.status(404).send();
+		}
+	}, function(error){
+		res.status(500).json({error: 'Find by Id failed'});
+	})
 });
 
 db.sequelize.sync().then(function() {
