@@ -7,15 +7,26 @@ module.exports = function(sequelize, DataTypes) {
 			unique: true,
 			//makes sure there are no records with same value
 			validate: {
-				isEmail : true
+				isEmail: true
 			}
 		},
-		password :{
-			type : DataTypes.STRING,
-			allowNull :false,
-			validate :{
-				len : [7,100],
+		password: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
+				len: [7, 100],
 			}
 		}
-	})
+
+	}, {
+		hooks: {
+			beforeValidate: function(user, options) {
+				//user.emil and convert it to lower case version 
+				if (typeof user.email === "string") {
+					user.email = user.email.toLowerCase();
+				}
+
+			}
+		}
+	});
 }
